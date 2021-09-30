@@ -1,44 +1,74 @@
-#6. Задача о спортсмене
+# 6. Аналитика о товарах. Чуть усложним задачу: если ввести существующие наименование и цену - суммируется количество
 
-print("\nСпортсмен занимается ежедневными пробежками. Каждый день спортсмен увеличивал результат на 10 % относительно предыдущего")
-while (True):
-    s1 = input("Введите пробег спортсмена в первый день, км: ").strip()
-    try:
-        a = abs(float(s1))
-        print("Пробег спортсмена в первый день: {:.3f} км".format(a))
-    except:
-        print("Это было не число. Ещё раз, пожалуйста.")
-    else:
+goods = []
+product = {}
+cnt = 1
+
+while True:
+    s1 = input("Введите наименование товара или stop для завершения ввода сведений о товарах: ").strip().lower()
+    if s1.find('stop') > -1:      # Завершаем ввод и переходим к статистике
         break
+    while True:                   # Цена товара
+        s2 = input("Введите цену товара, руб.: ").strip()
+        try:
+            cost = abs(float(s2))
+        except:
+            print("Это было не число. Пожалуйста, ещё раз.")
+        else:
+            break
+    while True:                   # Количество единиц товара
+        s2 = input("Введите количество единиц товара, шт.: ").strip()
+        try:
+            amount = abs(int(float(s2)))
+        except:
+            print("Это было не число. Пожалуйста, ещё раз.")
+        else:
+            break
 
-while (True):
-    s1 = input("Введите желаемую дистанцию, км, и мы определим, в какой день спортсмен её пробежит: ").strip()
-    try:
-        b = abs(float(s1))
-        print("Желаемая дистанция: {:.3f} км".format(b))
-    except:
-        print("Это было не число. Ещё раз, пожалуйста.")
-    else:
-        break
+    b_new = True
+    for item in goods:
+        product = dict(item[1])
+        if product.get('название') == s1 and product.get('цена') == cost:
+            product.update({'количество': amount + product.get('количество')})
+            item[1] = product.copy()
+            b_new = False
+            break
 
-#с печатью дня и дистанции, как в примере из задания
-#c = 1
-#while (True):
-#    print(str(c) + "-й день: {:.3f} км".format(a))
-#    if a >= b:
-#        break
-#    c += 1
-#    a = a * 1.1
+    if b_new == True:
+        product.update({'название': s1, 'цена': cost, 'количество': amount, 'ед.': 'шт.'})
+        goods.append([cnt, product])
+        cnt += 1
 
-#Или если без печати номера дня и дистанции, как сформулировано задание, несмотря на пример
-c = 1
-while (a < b):
-    c += 1
-    a = a * 1.1
+    print('\r')
+    for item in goods:
+        print(item)
+    print('\r')
 
-if c == 1:
-    s1 = "в"
-else:
-    s1 = "на"
+if len(goods) == 0:     # Список товаров не сформирован
+    exit(0)
 
-print(f"Ответ: {s1} {c}-й день, пробежав {a:.3f} км, спортсмен достиг результата - не менее {b:.3f} км")
+# Формирование списка товаров завершено, его элементы становятся кортежами (read-only)
+
+print('\nИтоговый список товаров:')
+for item in goods:
+    item = tuple(item)
+    print(item)
+
+result_dict = {}
+for item in goods:
+    product = dict(item[1])
+    for key, value in product.items():
+        if not result_dict.get(key):
+            result_dict[key] = [value]
+        else:
+            result_dict[key].append(value)
+
+# Финализируем только единицы, чтобы не нарушить уникальности пар "название-цена"
+if result_dict.get('ед.') != None:      # не нужно, но для обучения
+    result_dict['ед.'] = list(set(result_dict.get('ед.')))
+    print('\nАналитика о товарах:')
+    print(result_dict)
+
+
+
+
