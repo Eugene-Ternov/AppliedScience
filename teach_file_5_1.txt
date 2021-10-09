@@ -1,0 +1,4 @@
+Чётные строки записаны через print()
+Нечётные строки записаны через write() с добавлением \n
+This is an even line
+This is an odd line
